@@ -1,0 +1,27 @@
+@mixin normal {
+    border-style: none;
+    font-size: 25px;
+}
+
+
+form {
+    text-align: center;
+
+}
+
+button{
+    background-color: black;
+    color: whitesmoke;
+    margin-right: 20px;
+    align-items: center;
+    font-size: 15px;
+}
+
+#method {
+    @include normal;
+}
+
+#result {
+    @include normal;
+}
+
