@@ -39,21 +39,31 @@ ${this.state.results}`
     e.preventDefault();
     const url = this.state.url;
 
-     const poke = await fetch(url, {method: this.state.method, mode: 'cors'})
-     const pokeData = await poke.json();
+    try {
+      var poke = await fetch(url, { method: this.state.method, mode: 'cors' })
+    } catch (err) {
+      console.error(err);
+    }
 
-     var headersArray = []
-     for (var pair of poke.headers.entries()) {
-       headersArray.push(pair)
-     }
+    try {
+      const pokeData = await poke.json();
+      var headers = {};
+
+
+      for (var pair of poke.headers.entries()) {
+        headers[pair[0]] = pair[1]
+      }
       // .then(response => {
       //   // console.log('poke', response.json());
-        
+
       //   // if(response.status !==200)return;
       //   return response.json();
       // });
       // console.log(pokeData);
-      this.props.givePokemon(pokeData.results, pokeData.count, headersArray);
+      this.props.givePokemon(pokeData.results, pokeData.count, headers);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   render() {
