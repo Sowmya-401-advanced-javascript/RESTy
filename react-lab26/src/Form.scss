@@ -1,12 +1,9 @@
 @mixin normal {
-    border-style: none;
     font-size: 25px;
 }
 
-
 form {
-    text-align: center;
-
+    margin-left: 03vh;
 }
 
 button{
@@ -18,6 +15,7 @@ button{
 }
 
 #method {
+    padding-bottom: 20vh;
     @include normal;
 }
 
