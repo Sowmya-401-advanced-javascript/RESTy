@@ -1,3 +1,5 @@
 # RESTy
 
-![Whiteboard](react-lab26/assets/RESTy-uml.jpg)
+Created gh-pages and wip!
+
+![Whiteboard](/assets/RESTy-uml.jpg)
