@@ -23,3 +23,19 @@ button{
     @include normal;
 }
 
+#restRequestBody{
+    padding-bottom: 20vh;
+    @include normal;
+    textarea {
+        width: 100%;
+        min-height: 150px;
+    }
+}
+
+#resultResponseBody{
+    .strong{
+        font-weight: bold;
+    }
+}
+
+
