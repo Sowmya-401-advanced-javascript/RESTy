@@ -3,6 +3,8 @@ import Header from './Header';
 import Footer from './Footer';
 import Form from './Form';
 import Results from './ResultsApi';
+import List from './list';
+import If from './if';
 import './App.scss';
 
 class App extends React.Component {
