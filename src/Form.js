@@ -1,4 +1,5 @@
 import React from 'react';
+import Results from './ResultsApi';
 import './Form.scss';
 
 class Form extends React.Component {
@@ -7,14 +8,15 @@ class Form extends React.Component {
     this.state = {
       url: '',
       method: '',
-      results: ''
+      result: {},
+      headers: {},
+      requestBody: {}
     };
   }
 
   handleInput = e => {
     let input = e.target.value;
     this.setState({ url: input });
-    // console.log(input);
   }
 
   handleMethod = e => {
@@ -24,43 +26,55 @@ class Form extends React.Component {
     this.setState({ method: newMethod });
   }
 
-  handleClick = e => {
-    e.preventDefault();
-    if (this.state.url && this.state.method) {
-      let newResult = `${this.state.method} ${this.state.url}`;
-      let newResultSet = `${newResult}
-${this.state.results}`
-      this.setState({ results: newResultSet });
-      // console.log(newResultSet);
-    }
+  handleRequestBody = e => {
+    let newRequestBody = e.target.value;
+    this.setState({ requestBody: newRequestBody });
+    // console.log();
   }
 
-  getPokemon = async (e) => {
+  getResult = async (e) => {
     e.preventDefault();
     const url = this.state.url;
+    const method = this.state.method;
+    let requestOptions;
+    let requestHeaders = { "content-type": "application/json; charset=UTF-8" };
+    var responseHeaders = {};
+    let requestBody = this.state.requestBody;
+
+    switch (method) {
+      case 'GET':
+        requestOptions = { method: method, mode: 'cors' };
+        break;
+      case 'POST':
+        requestOptions = { method: method, headers: requestHeaders, body: requestBody, mode: 'cors' };
+        break;
+      case 'PUT':
+        requestOptions = { method: method, headers: requestHeaders, body: requestBody, mode: 'cors' };
+        break;
+      case 'DELETE':
+        requestOptions = { method: method, mode: 'cors' };
+        break;
+
+      default:
+        requestOptions = {};
+        break;
+    }
 
     try {
-      var poke = await fetch(url, { method: this.state.method, mode: 'cors' })
+      var result = await fetch(url, requestOptions)
     } catch (err) {
       console.error(err);
     }
 
     try {
-      const pokeData = await poke.json();
-      var headers = {};
+      const resultBody = await result.json();
 
-
-      for (var pair of poke.headers.entries()) {
-        headers[pair[0]] = pair[1]
+      for (var pair of result.headers.entries()) {
+        responseHeaders[pair[0]] = pair[1]
       }
-      // .then(response => {
-      //   // console.log('poke', response.json());
 
-      //   // if(response.status !==200)return;
-      //   return response.json();
-      // });
-      // console.log(pokeData);
-      this.props.givePokemon(pokeData.results, pokeData.count, headers);
+      this.setState({ headers: responseHeaders });
+      this.setState({ result: resultBody});
     } catch (err) {
       console.error(err);
     }
@@ -69,28 +83,42 @@ ${this.state.results}`
   render() {
     return (
       <div>
-      <form>
-      <label for="URL" >URL:</label>
-      <input name="URL" onBlur={this.handleInput}
-      placeholder="Enter a URL...."/>
-      <button onClick={this.getPokemon}>Go!</button>
-      </form>
-      
-      <fieldset id='method' onClick={this.handleMethod}>
-          <legend> Choose a method:</legend>
-          <button value='GET'>GET</button>
-          <button value='POST'>POST</button>
-          <button value='PUT'>PUT</button>
-          <button value='DELETE'>DELETE</button>
-      </fieldset>
-      <fieldset id='result'>
-          <legend>Results:</legend>
-          <pre>{this.state.results}</pre>
-      </fieldset>
+        <form>
+          <label for="URL" >URL:</label>
+          <input name="URL" onBlur={this.handleInput}
+            placeholder="Enter a URL...." />
+          <button onClick={this.getResult}>Go!</button>
 
+
+          <fieldset id='method' onClick={this.handleMethod}>
+            <legend> Choose a method:</legend>
+            <button value='GET'>GET</button>
+            <button value='POST'>POST</button>
+            <button value='PUT'>PUT</button>
+            <button value='DELETE'>DELETE</button>
+          </fieldset>
+
+          {(this.state.method === 'POST' || this.state.method === 'PUT') ?
+
+            <fieldset id='restRequestBody'>
+              <legend>Request Body: </legend>
+              <textarea name='requestBody' onBlur={this.handleRequestBody}></textarea>
+            </fieldset>
+            : ""
+          }
+
+          <fieldset id='resultResponseBody'>
+            <Results
+              url={this.state.url}
+              method={this.state.method}
+              headers={this.state.headers}
+              result={this.state.result}
+            />
+          </fieldset>
+        </form>
       </div>
     )
   }
 }
 
-  export default Form;
+export default Form;
