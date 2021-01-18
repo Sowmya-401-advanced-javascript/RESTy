@@ -6,11 +6,17 @@ class Form extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      urlInput: '',
       url: '',
       method: '',
       result: {},
       headers: {},
-      requestBody: {}
+      requestBody: {},
+      requestHistory: []
+      // historyList: {
+      //   1 { 'method': 'GET', 'url': 'https://elle.com', 'requestBody': ','},
+      //   2 { 'method': 'PUT', 'url': 'https://elle.com/put1', 'requestBody': '{something}'}
+      // }
     };
   }
 
@@ -22,14 +28,47 @@ class Form extends React.Component {
   handleMethod = e => {
     e.preventDefault();
     let newMethod = e.target.value;
-    // console.log(newMethod);
     this.setState({ method: newMethod });
   }
 
   handleRequestBody = e => {
     let newRequestBody = e.target.value;
     this.setState({ requestBody: newRequestBody });
-    // console.log();
+  }
+
+  useHistoryItem = e => {
+    e.preventDefault();
+
+
+
+    let historyItemIdx = 0;
+    let historyList = this.state.requestHistory;
+    let url = historyList[historyItemIdx].url;
+    let requestOptions = historyList[historyItemIdx].requestOptions;
+
+    this.setState({ url });
+    this.setState({ method: requestOptions.method });
+    this.setState({ displayResults: true })
+
+    this.getResultsFromHistory(e, url, requestOptions);
+  }
+
+  getResultsFromHistory = async (e, url, requestOptions) => {
+    let responseHeaders = {};
+
+    const result = await fetch(url, requestOptions)
+     .then(response => {
+       if(response.status === 200) {
+         for(var pair of response.headers.entries()) {
+           responseHeaders[pair[0]] = pair[1];
+         }
+         return response.json();
+       } else {
+         return;
+       }
+     });
+     this.setState({ result: result });
+     this.setState({ headers: responseHeaders });
   }
 
   getResult = async (e) => {
@@ -40,6 +79,7 @@ class Form extends React.Component {
     let requestHeaders = { "content-type": "application/json; charset=UTF-8" };
     var responseHeaders = {};
     let requestBody = this.state.requestBody;
+    // let historyItem = [];
 
     switch (method) {
       case 'GET':
@@ -74,19 +114,39 @@ class Form extends React.Component {
       }
 
       this.setState({ headers: responseHeaders });
-      this.setState({ result: resultBody});
+      this.setState({ result: resultBody });
+
+      this.state.requestHistory.push({ method: method, url: url});
+      console.log(this.state.requestHistory)
     } catch (err) {
       console.error(err);
     }
   }
 
+  handlePreviousQuery = event => {
+    console.log("inside handlePreviousQuery")
+    console.log(event)
+    console.log(event.target)
+    console.log(event.target.value)
+    this.setState({ urlInput: "abc" })
+    console.log(this.state.urlInput)
+  }
+
   render() {
     return (
       <div>
+        <ul onClick={this.handlePreviousQuery}>
+          {this.state.requestHistory.map( (item, i, array) =>
+          <li key={i}>
+            {item.url}
+          </li> )}
+        </ul>
+
         <form>
           <label for="URL" >URL:</label>
           <input name="URL" onBlur={this.handleInput}
-            placeholder="Enter a URL...." />
+            placeholder="Enter a URL...." autoFocus
+            defaultValue={this.state.urlInput}/>
           <button onClick={this.getResult}>Go!</button>
 
 
