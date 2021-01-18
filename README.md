@@ -1,5 +1,10 @@
 # RESTy
 
-Created gh-pages and wip!
+### Links and Resources
+gh-pages : https://sowmya-401-advanced-javascript.github.io/RESTy/
 
-![Whiteboard](/assets/RESTy-uml.jpg)
+### Setup
+To run application:
+    `npm start`
+
+![Whiteboard/UML](/assets/RESTy-uml.jpg)
